@@ -3,9 +3,24 @@ simplified mysql lib allowing rapid application development.
 
 # API
 
-## Table (con,schema)
+## Table & Schema
+
 ```js
-var Table = require('rethink-table').Table 
+const Sequelize = require('sequelize');
+const Table = require('mysql-table').Table;
+
+var schema = {
+  table: 'bets',
+  fields: {
+    id: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+      allowNull: false
+    },
+    userid: Sequelize.STRING
+  },
+  indices: ['userid']
+}
 
 Table(con,schema).then(function(table){
   //your table object

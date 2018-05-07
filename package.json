@@ -1,0 +1,32 @@
+{
+  "name": "mysql-table",
+  "version": "1.0.0",
+  "description": "simplified mysql lib allowing rapid application development.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graycatfromspace/mysql-table.git"
+  },
+  "keywords": [
+    "mysql",
+    "seqelize",
+    "mysql2",
+    "orm"
+  ],
+  "author": "graycatfromspace",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/graycatfromspace/mysql-table/issues"
+  },
+  "homepage": "https://github.com/graycatfromspace/mysql-table#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "highland": "^2.13.0",
+    "lodash": "^4.17.10",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.7"
+  }
+}

@@ -45,3 +45,4 @@ module.exports = Promise.method(function (config, tables) {
         }, { _con: con, _config: config });
     });
 });
+

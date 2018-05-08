@@ -14,7 +14,9 @@ module.exports = function (con, schema) {
     methods.schema = schema
     methods.con = con
 
-    methods.upsert = table.upsert;
+    methods.upsert = Promise.method(function(value){
+      return table.upsert(value);
+    });
 
     methods.get = Promise.method(function (id) {
       assert(id, 'id required to find')
@@ -52,9 +54,9 @@ module.exports = function (con, schema) {
     })
 
     // fucking sequelize..
-    methods.readStream = function () {
+    methods.readStream = Promise.method(function () {
       return con.mysql.query(`SELECT * FROM ${table.schema.table}`).stream()
-    }
+    })
 
     return methods;
   })

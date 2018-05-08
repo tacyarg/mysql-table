@@ -72,6 +72,8 @@ Table(con,schema).then(function(table){
 ## Table Methods
 All return promises or in some cases a stream.
 
+### table.upsert(fieldObj)
+Upsert row.
 ### table.get(id)
 Get a row from the table, throws error if not found.
 ### table.has(id)

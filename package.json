@@ -1,7 +1,7 @@
 {
   "name": "mysql-table",
   "version": "1.0.0",
-  "description": "simplified mysql lib allowing rapid application development.",
+  "description": "Simplified mysql lib built on top of sequelize.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

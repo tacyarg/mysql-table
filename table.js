@@ -58,6 +58,11 @@ module.exports = function (con, schema) {
     })
 
     methods.paginate = Promise.method(function (index, page, limit) {
+      assert(index, 'requres field index')
+
+      page = page || 1
+      limit = limit || 100
+
       return Promise.all([
         table.count(),
         table.findAll({

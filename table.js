@@ -14,7 +14,7 @@ module.exports = function (con, schema) {
     methods.schema = schema
     methods.con = con
 
-    methods.upsert = Promise.method(function(value){
+    methods.upsert = Promise.method(function (value) {
       return table.upsert(value);
     });
 
@@ -50,7 +50,32 @@ module.exports = function (con, schema) {
     methods.update = Promise.method(function (key, values) {
       assert(key, 'requres id key')
       assert(values, 'requires values to update')
-      return table.update(values, { where: { id: key } })
+      return table.update(values, {
+        where: {
+          id: key
+        }
+      })
+    })
+
+    methods.paginate = Promise.method(function (index, page, limit) {
+      return Promise.all([
+        table.count(),
+        table.findAll({
+          order: [
+            [index, 'ASC']
+          ],
+          offset: (page - 1) * limit,
+          limit: limit
+        })
+      ]).spread(function (count, rows) {
+        return {
+          currentPage: page,
+          perPage: limit,
+          total: count,
+          totalPages: Math.ceil(count / perPage),
+          data: rows
+        }
+      })
     })
 
     // fucking sequelize..

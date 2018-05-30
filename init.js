@@ -28,7 +28,7 @@ module.exports = Promise.method(function (config, tables) {
     assert(config, 'requires mysql connection configuration');
     assert(config.database, 'requires database to connect');
 
-    var sequelize = createConnection(config.host, config.user, config.password, config.dialect);
+    var sequelize = createConnection(config.host, config.user, config.password, null, config.dialect);
     //have to hack in db creation...
     return sequelize.query(`CREATE DATABASE IF NOT EXISTS ${config.database}`, { raw: true }).then(function () {
         var con = createConnection(config.host, config.user, config.password, config.database, config.dialect)

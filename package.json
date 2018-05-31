@@ -1,6 +1,6 @@
 {
   "name": "mysql-table",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Simplified mysql lib built on top of sequelize.",
   "main": "index.js",
   "scripts": {

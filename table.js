@@ -36,7 +36,7 @@ module.exports = function (con, schema) {
 
     methods.getBy = Promise.method(function (key, value) {
       assert(key, 'requres key field')
-      assert(value, 'requires value to match')
+      assert(value === null, 'requires value to match')
 
       // uhm lol..
       var obj = {};

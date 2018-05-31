@@ -77,7 +77,7 @@ module.exports = function (con, schema) {
           currentPage: page,
           perPage: limit,
           total: count,
-          totalPages: Math.ceil(count / perPage),
+          totalPages: Math.ceil(count / limit),
           data: rows
         }
       })

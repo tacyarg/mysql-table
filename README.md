@@ -48,7 +48,24 @@ Init(config, [
 
 # API
 
-// TODO: add examples
+## Schema
+* `table` - the table name
+* `fields` - function using the knex schema building tools. [Referance Docs](https://knexjs.org/#Schema-Building)
+
+```js
+var SCHEMA = {
+    table: 'series',
+    fields: function (schema) {
+    // columnss
+    schema.uuid('id').notNullable().primary()
+    schema.integer('rank')
+    schema.json('meta')
+
+    // indexs
+    schema.index('rank')
+    }
+}
+```
 
 ## Table Methods
 

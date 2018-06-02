@@ -49,8 +49,7 @@ module.exports = function (con, schema) {
     }
 
     table.update = function (id, object) {
-      object.id = id
-      return table().update(object).then(function(){
+      return table().where('id', id).update(object).then(function(){
         return object
       })
     }

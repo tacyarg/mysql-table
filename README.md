@@ -46,7 +46,7 @@ Init(config, [
 })
 ```
 
-# API
+# Data Models
 
 ## Config Object
 Object containing database connection options.
@@ -79,6 +79,11 @@ var SCHEMA = {
     }
 }
 ```
+
+# API INTERFACE
+
+## Utils
+Object containing various helper functions.
 
 ## Table(con, schema)
 Creates table and initalizes your defined schema, will ignore if the table is already created.

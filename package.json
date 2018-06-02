@@ -1,7 +1,7 @@
 {
   "name": "mysql-table",
-  "version": "2.0.3",
-  "description": "Simple and flexable Mysql library for node.js",
+  "version": "2.0.4",
+  "description": "Simple and flexable Mysql library built on top of knex.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

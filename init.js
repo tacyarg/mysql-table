@@ -1,4 +1,4 @@
-const Mysql = require('knex')
+const Knex = require('knex')
 const Promise = require('bluebird')
 const assert = require('assert')
 const lodash = require('lodash')
@@ -8,14 +8,21 @@ function createDB(con, name) {
 }
 
 var Connection = Promise.method(function (config) {
-  return Mysql({
+  if(config.connection) return Knex(config)
+  return Knex({
     pool: {
       min: 0,
       max: 5
     },
-    acquireConnectionTimeout: 10000,
-    client: 'mysql',
-    connection: config
+    acquireConnectionTimeout:  config.acquireConnectionTimeout || 10000,
+    client: config.client || 'mysql',
+    connection: {
+      user: config.user,
+      host: config.host,
+      password: config.password,
+      database: config.database,
+      port: config.port
+    }
   })
 })
 

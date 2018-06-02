@@ -1,7 +1,8 @@
 # MYSQL-TABLE
-Useful utility for creating and manipulating mysql tables. 
-Simplified schema definition, and automatic db/table creation.
-Includes a streaming interface.
+> Useful utility for creating and manipulating mysql tables using knex.
+> Works with any db knex supports.
+> Simplified schema definition, and automatic db/table creation.
+> Includes a streaming interface.
 
 ## Initialization
 ```js
@@ -49,7 +50,7 @@ Init(config, [
 # Data Models
 
 ## Config Object
-Object containing database connection options.
+Object containing connection options or knex config object.
 
 ```js
 const config = {

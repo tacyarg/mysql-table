@@ -13,8 +13,13 @@ module.exports = function (con, schema) {
       return con(schema.table)
     }
 
-    table.schema = schema
-    table.con = con
+    table.schema = function(){
+      return schema
+    }
+
+    table.con = function(){
+      return con
+    }
 
     table.alter = function (schema) {
       return utils.alterTable(con, schema)
@@ -83,6 +88,10 @@ module.exports = function (con, schema) {
       return table.get(id).del().then(result => true)
     }
 
+    table.drop = function () {
+      return con.schema.dropTable(schema.table)
+    }
+
     // helper queries
 
     table.count = function () {
@@ -91,10 +100,6 @@ module.exports = function (con, schema) {
 
     table.paginate = function (page, limit) {
       return utils.paginate(table(), page, limit);
-    }
-
-    table.drop = function () {
-      con.schema.dropTable(schema.table)
     }
 
     return table;

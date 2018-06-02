@@ -82,33 +82,9 @@ var SCHEMA = {
 
 # API INTERFACE
 
-## Utils
-Object containing various helper functions.
-
-## Table(con, schema)
-Creates table and initalizes your defined schema, will ignore if the table is already created.
-> Returns object of [Table Methods](#table-methods).
-
-```js
-module.exports = function(con) {
-
-    var schema = {...}
-
-    return Table(con, schema).then(table => {
-
-        // cool custom methods
-        table.setUsername = function (id, username) {
-            return table.update(id, { username })
-        }
-
-        return table;
-    })
-}
-```
-
-## Init(con, tables)
+## Init(config, tables)
 Creates the database and initalizes connection pool. Also creates and initalizes table schemas.
-> returns [Table Methods](#table-methods) objects keyed by table name.
+> returns object keyed by table name each containing [Table Methods](#table-methods) for the table.
 
 * `config` - configuration and database connection options.
 * `tables` - single or array of table definitions.
@@ -127,6 +103,36 @@ var tables = [
 Init(config, tables).then(tables => {
     // do things with db tables...
 })
+```
+
+## Table(con, schema) & Utils
+Creates table and initalizes your defined schema, will ignore if the table is already created.
+> Returns object of [Table Methods](#table-methods).
+
+* `con` - Database connection from the init method.
+* `schema` - [Schema Object](#schema-object)
+
+```js
+module.exports = function(con) {
+
+    var {Table, Utils} = require('mysql-table')
+    var schema = {...}
+
+    return Table(con, schema).then(table => {
+
+        // cool custom methods
+        table.setUsername = function (id, username) {
+            return table.update(id, { username })
+        }
+
+        table.getOnlinePaginated = function (page, limit) {
+            var query = table.getBy('online', true)
+            return Utils.paginate(query, page, limit)
+        }
+
+        return table;
+    })
+}
 ```
 
 ## Table Methods

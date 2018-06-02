@@ -166,11 +166,12 @@ Stream the table.
 Streamify a query.
 ### table.list()
 List all rows in the table.
-### table.schema()
-Return the current table schema.
-### table.con()
-Return the base class knex object.
 ### table.delete(id)
 Delete a row from the table.
 ### table.drop()
 Drop the table entirely.
+
+### table.schema
+Return the current table schema.
+### table.con
+Return the base class knex object.

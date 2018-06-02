@@ -13,13 +13,8 @@ module.exports = function (con, schema) {
       return con(schema.table)
     }
 
-    table.schema = function(){
-      return schema
-    }
-
-    table.con = function(){
-      return con
-    }
+    table.schema = schema
+    table.con = con
 
     table.alter = function (schema) {
       return utils.alterTable(con, schema)

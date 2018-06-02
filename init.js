@@ -47,8 +47,8 @@ module.exports = function (config, tables) {
   }).then(con => {
     tables = lodash.castArray(tables);
     return Promise.reduce(tables, function (result, table) {
-      return table(con).then(function (table) {
-        result[table.schema.table] = table;
+      return table(con).then(function (methods) {
+        result[table.schema.table] = methods;
         return result;
       });
     }, {

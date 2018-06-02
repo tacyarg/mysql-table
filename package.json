@@ -1,7 +1,7 @@
 {
   "name": "mysql-table",
-  "version": "2.0.4",
-  "description": "Simple and flexable Mysql library built on top of knex.",
+  "version": "2.0.5",
+  "description": "Simple and flexable Mysql library built on top of knexjs.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,12 @@
     "mysql2",
     "orm",
     "easy",
-    "simple"
+    "simple",
+    "knexjs",
+    "mssql",
+    "postgres",
+    "mariadb",
+    "sqllite3"
   ],
   "author": "graycatfromspace",
   "license": "ISC",

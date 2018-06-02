@@ -1,6 +1,6 @@
 # MYSQL-TABLE
-> Useful utility for creating and manipulating mysql tables using knex.
-> Works with any db knex supports.
+> Useful utility for creating and manipulating mysql tables using [KnexJS](https://knexjs.org/#Schema-Building).
+> Works with any db knex supports: Postgres, MSSQL, MySQL, MariaDB, SQLite3, Oracle, and Amazon Redshift.
 > Simplified schema definition, and automatic db/table creation.
 > Includes a streaming interface.
 

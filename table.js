@@ -1,93 +1,103 @@
-var Promise = require('bluebird')
-var assert = require('assert')
-var lodash = require('lodash')
-var highland = require('highland');
+const Promise = require('bluebird')
+const assert = require('assert')
+const lodash = require('lodash')
 const utils = require('./utils');
 
 module.exports = function (con, schema) {
   assert(con, 'Table requires rethink db connection')
   assert(schema, 'Table requires schema object')
 
-  return utils.initTable(con, schema).then(table => {
-    var methods = {}
+  return utils.initTable(con, schema).then(con => {
 
-    methods.schema = schema
-    methods.con = con
+    var table = function () {
+      return con(schema.table)
+    }
 
-    methods.upsert = Promise.method(function (value) {
-      return table.upsert(value);
-    });
+    table.schema = schema
+    table.con = con
 
-    methods.get = Promise.method(function (id) {
-      assert(id, 'id required to find')
-      return table.findById(id).then(row => {
-        if (row) return row;
-        else {
-          throw new Error(`No record found: ${id}`);
-        }
+    table.alter = function (schema) {
+      return utils.alterTable(con, schema)
+    }
+
+    table.filter = function (options) {
+      return table().select('*').where(options)
+    }
+
+    table.getBy = function (index, id) {
+      return table().select('*').where(index, id).first()
+    }
+
+    table.get = function (id) {
+      return table.getBy('id', id)
+    }
+
+    table.getAll = function (ids) {
+      return table().select('*').where('id', ids)
+    }
+
+    table.has = function (id) {
+      return table.get(id).then(row => {
+        return !!row
       })
-    })
+    }
 
-    methods.has = Promise.method(function (id) {
-      return table.findById(id).then(row => {
-        return row === null ? false : true;
+    table.hasBy = function (index, id) {
+      return table.getBy(index, id).then(row => {
+        return !!row
       })
-    })
+    }
 
-    methods.getBy = Promise.method(function (key, value) {
-      assert(key, 'requres key field')
-      // assert(value === null, 'requires value to match')
-
-      // uhm lol..
-      var obj = {};
-      obj[key] = value;
-
-      return table.findAll({
-        where: obj
-      });
-    });
-
-    methods.update = Promise.method(function (key, values) {
-      assert(key, 'requres id key')
-      assert(values, 'requires values to update')
-      return table.update(values, {
-        where: {
-          id: key
-        }
+    table.upsert = function (object) {
+      return table.has(object.id).then(result => {
+        return result ? table().update(object) : table().insert(object)
+      }).then(result => {
+        // return the original object
+        return object
       })
-    })
+    }
 
-    methods.paginate = Promise.method(function (index, page, limit) {
-      assert(index, 'requres field index')
+    table.update = function (id, object) {
+      return table().update(lodash.merge(id, object))
+    }
 
-      page = page || 1
-      limit = limit || 100
+    table.create = function (object) {
 
-      return Promise.all([
-        table.count(),
-        table.findAll({
-          order: [
-            [index, 'ASC']
-          ],
-          offset: (page - 1) * limit,
-          limit: limit
-        })
-      ]).spread(function (count, rows) {
-        return {
-          currentPage: page,
-          perPage: limit,
-          total: count,
-          totalPages: Math.ceil(count / limit),
-          data: rows
-        }
-      })
-    })
+      return table().insert(object)
+    }
 
-    // fucking sequelize..
-    methods.readStream = Promise.method(function () {
-      return con.mysql.query(`SELECT * FROM ${table.schema.table}`).stream()
-    })
+    table.list = function () {
+      return table.select('*')
+    }
 
-    return methods;
+    table.readStream = function () {
+      return table.list().stream();
+    }
+
+    table.streamify = function (query) {
+      assert(query, 'requires driver query')
+      return query.stream()
+    }
+
+    table.delete = function (id) {
+      return table.get(id).del().then(result => true)
+    }
+
+    // helper queries
+
+    table.count = function () {
+      return utils.count(table());
+    }
+
+    table.paginate = function (page, limit) {
+      return utils.paginate(table(), page, limit);
+    }
+
+    table.drop = function () {
+      con.schema.dropTable(schema.table)
+    }
+
+    return table;
   })
+
 }

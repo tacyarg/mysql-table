@@ -1,32 +1,33 @@
 # MYSQL-TABLE
-simplified mysql lib allowing rapid application development.
+Useful utility for creating and manipulating mysql tables. 
+Simplified schema definition, and automatic db/table creation.
+Includes a streaming interface.
 
 ## Initialization
 ```js
-var { Table, Init } = require('mysql-table');
+var { Table, Init, Utils } = require('mysql-table');
 
 const config = {
     database: 'series',
     host: '127.0.0.1',
     port: 3306,
     user: 'root',
-    password: 'root'
+    password: 'some_secret_password'
 }
 
 function UserTable(con) {
-    var schema = {
-        table: 'users',
-        fields: {
-            id: {
-                type: Sequelize.STRING,
-                primaryKey: true,
-                allowNull: false
-            },
-            username: Sequelize.STRING
-        },
-        indices: ['username']
+    var SCHEMA = {
+      table: 'series',
+      fields: function (schema) {
+        // columnss
+        schema.uuid('id').notNullable().primary()
+        schema.integer('rank')
+        schema.json('meta')
+    
+        // indexs
+        schema.index('rank')
+      }
     }
-
 
     return Table(con, schema).then(table => {
 
@@ -38,49 +39,52 @@ function UserTable(con) {
     })
 };
 
-Init(config, UserTable).then(tables => {
+Init(config, [
+  UserTable
+]).then(tables => {
     // do things with db
 })
 ```
 
 # API
 
-## Table & Schema
-
-```js
-const Sequelize = require('sequelize');
-const Table = require('mysql-table').Table;
-
-var schema = {
-  table: 'bets',
-  fields: {
-    id: {
-      type: Sequelize.STRING,
-      primaryKey: true,
-      allowNull: false
-    },
-    userid: Sequelize.STRING
-  },
-  indices: ['userid']
-}
-
-Table(con,schema).then(function(table){
-  //your table object
-})
-```
+// TODO: add examples
 
 ## Table Methods
-All return promises or in some cases a stream.
 
-### table.upsert(fieldObj)
-Upsert row.
+### table.alter(schema)
+Modify the table schema.
 ### table.get(id)
-Get a row from the table, throws error if not found.
+Get a single row from the table.
+### table.getAll(ids)
+Get many rows from the table.
+### table.getBy(field, id)
+Get rows from the table by column.
 ### table.has(id)
-Check if a row exisits.
-### table.getBy(field, value)
-Find rows matching the given field and value.
+Check table for existing row using id.
+### table.hasBy(field, id)
+Check table for existing row using column and id.
 ### table.update(id, fieldsObj)
-Update a given row.
+Update a row.
+### table.upsert(fieldsObj)
+Update an object if key exists, or insert new object otherwise.
+### table.create(fieldsObj)
+Create a new row in the table, will throw error if another row is exisitng with the same id.
+### table.filter(filterObj)
+Filter the table.
+### table.count()
+Count all rows in the table.
 ### table.readStream()
-Stream a table.
+Stream the table.
+### table.streamify(query)
+Streamify a query.
+### table.list()
+List all rows in the table.
+### table.schema()
+Return the current table schema.
+### table.con()
+Return the base class knex object.
+### table.delete(id)
+Delete a row from the table.
+### table.drop()
+Drop the table entirely.

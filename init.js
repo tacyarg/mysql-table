@@ -1,48 +1,61 @@
-const Mysql = require('mysql2');
-const Sequelize = require('sequelize');
-const lodash = require('lodash');
-const Promise = require('bluebird');
-const assert = require('assert');
+const Mysql = require('knex')
+const Promise = require('bluebird')
+const assert = require('assert')
+const lodash = require('lodash')
 
-const Table = require('./table');
-
-function createConnection(host, user, pass, db, dialect) {
-    return new Sequelize(db, user, pass, {
-        host: host,
-        dialect: dialect || 'mysql',
-        pool: {
-            max: 5,
-            acquire: 30000,
-            idle: 10000
-        },
-        define: {
-            timestamps: false
-        },
-        logging: false
-    }
-    );
+function createDB(con, name) {
+  return con.raw(`CREATE DATABASE IF NOT EXISTS ${name}`)
 }
 
-// basic implementation for now...
-module.exports = Promise.method(function (config, tables) {
-    assert(config, 'requires mysql connection configuration');
-    assert(config.database, 'requires database to connect');
+var Connection = Promise.method(function (config) {
+  return Mysql({
+    pool: {
+      min: 0,
+      max: 5
+    },
+    acquireConnectionTimeout: 10000,
+    client: 'mysql',
+    connection: config
+  })
+})
 
-    var sequelize = createConnection(config.host, config.user, config.password, null, config.dialect);
-    //have to hack in db creation...
-    return sequelize.query(`CREATE DATABASE IF NOT EXISTS ${config.database}`, { raw: true }).then(function () {
-        var con = createConnection(config.host, config.user, config.password, config.database, config.dialect)
-        // include seccondary mysql lib for lower level calls.
-        con.mysql = Mysql.createConnection(config);
+module.exports = function (config, tables) {
+  assert(config.database, 'requires database')
 
-        // initialize models
-        tables = lodash.castArray(tables);
-        return Promise.reduce(tables, function (result, table) {
-            return table(con).then(function (table) {
-                result[table.schema.table] = table;
-                return result;
-            });
-        }, { _con: con, _config: config });
+  config.typeCast = function (field, next) {
+    if (field.type === 'JSON') {
+      return (JSON.parse(field.string()))
+    }
+    return next()
+  }
+
+  return Connection({
+    user: config.user,
+    host: config.host,
+    password: config.password
+  }).then(con => {
+    return createDB(con, config.database)
+  }).then(con => {
+    return Connection(config)
+  }).then(con => {
+    tables = lodash.castArray(tables);
+    return Promise.reduce(tables, function (result, table) {
+      return table(con).then(function (table) {
+        result[table.schema.table] = table;
+        return result;
+      });
+    }, {
+      _con: con,
+      _config: config
     });
-});
+  })
+}
 
+// module.exports.createTable = function(con, name, schema) {
+//   return con.schema.createTable(TABLE_NAME, SCHEMA)
+//     .then(function(){
+//       return con
+//     }).catch(err => { 
+//       return con
+//     })
+// }

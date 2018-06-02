@@ -49,6 +49,7 @@ module.exports = function (con, schema) {
     }
 
     table.update = function (id, object) {
+      object = lodash.omit(object, ['id'])
       return table().where('id', id).update(object).then(function(){
         return object
       })

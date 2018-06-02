@@ -68,7 +68,7 @@ module.exports = function (con, schema) {
     }
 
     table.list = function () {
-      return table.select('*')
+      return table()
     }
 
     table.readStream = function () {

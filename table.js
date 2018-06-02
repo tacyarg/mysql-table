@@ -38,32 +38,32 @@ module.exports = function (con, schema) {
 
     table.has = function (id) {
       return table.get(id).then(row => {
-        return !!row
+        return Promise.resolve(!!row)
       })
     }
 
     table.hasBy = function (index, id) {
       return table.getBy(index, id).then(row => {
-        return !!row
-      })
-    }
-
-    table.upsert = function (object) {
-      return table.has(object.id).then(result => {
-        return result ? table().update(object) : table().insert(object)
-      }).then(result => {
-        // return the original object
-        return object
+        return Promise.resolve(!!row)
       })
     }
 
     table.update = function (id, object) {
-      return table().update(lodash.merge(id, object))
+      object.id = id
+      return table().update(object)
     }
 
     table.create = function (object) {
-
       return table().insert(object)
+    }
+
+    table.upsert = function (object) {
+      return table.has(object.id).then(result => {
+        return result ? table.update(object) : table.create(object)
+      }).then(result => {
+        // return the original object
+        return Promise.resolve(object)
+      })
     }
 
     table.list = function () {
@@ -80,7 +80,9 @@ module.exports = function (con, schema) {
     }
 
     table.delete = function (id) {
-      return table.get(id).del().then(result => true)
+      return table.get(id).del().then(result => {
+        return Promise.resolve(true)
+      })
     }
 
     table.drop = function () {

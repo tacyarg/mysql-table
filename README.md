@@ -48,23 +48,80 @@ Init(config, [
 
 # API
 
-## Schema
+## Config Object
+Object containing database connection options.
+
+```js
+const config = {
+    database: 'epic_application',
+    host: '127.0.0.1',
+    port: 3306,
+    user: 'root',
+    password: 'some_secret_password'
+}
+```
+
+## Schema Object
 * `table` - the table name
 * `fields` - function using the knex schema building tools. [Referance Docs](https://knexjs.org/#Schema-Building)
 
 ```js
 var SCHEMA = {
-    table: 'series',
+    table: 'users',
     fields: function (schema) {
-    // columnss
-    schema.uuid('id').notNullable().primary()
-    schema.integer('rank')
-    schema.json('meta')
+        // columnss
+        schema.uuid('id').notNullable().primary()
+        schema.integer('rank')
+        schema.json('meta')
 
-    // indexs
-    schema.index('rank')
+        // indexs
+        schema.index('rank')
     }
 }
+```
+
+## Table(con, schema)
+Creates table and initalizes your defined schema, will ignore if the table is already created.
+> Returns object of [Table Methods](#table-methods).
+
+```js
+module.exports = function(con) {
+
+    var schema = {...}
+
+    return Table(con, schema).then(table => {
+
+        // cool custom methods
+        table.setUsername = function (id, username) {
+            return table.update(id, { username })
+        }
+
+        return table;
+    })
+}
+```
+
+## Init(con, tables)
+Creates the database and initalizes connection pool. Also creates and initalizes table schemas.
+> returns [Table Methods](#table-methods) objects keyed by table name.
+
+* `config` - configuration and database connection options.
+* `tables` - single or array of table definitions.
+
+```js
+const config = {...}
+
+// SINGLE DEFINITION
+var tables = require('./models/users')
+// OR, ARRAY OF DEFINITIONS
+var tables = [
+    require('./models/users'),
+    ...
+]
+
+Init(config, tables).then(tables => {
+    // do things with db tables...
+})
 ```
 
 ## Table Methods

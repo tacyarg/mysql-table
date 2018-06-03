@@ -25,11 +25,11 @@ module.exports = function (con, schema) {
     }
 
     table.getBy = function (index, id) {
-      return table().select('*').where(index, id).first()
+      return table().select('*').where(index, id)
     }
 
     table.get = function (id) {
-      return table.getBy('id', id)
+      return table.getBy('id', id).first()
     }
 
     table.getAll = function (ids) {
@@ -43,7 +43,7 @@ module.exports = function (con, schema) {
     }
 
     table.hasBy = function (index, id) {
-      return table.getBy(index, id).then(row => {
+      return table.getBy(index, id).first().then(row => {
         return !!row
       })
     }

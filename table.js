@@ -33,7 +33,7 @@ module.exports = function (con, schema) {
     }
 
     table.getAll = function (ids) {
-      return table().select('*').whereIn('id', ids)
+      return Promise.mapSeries(ids, table.get)
     }
 
     table.has = function (id) {

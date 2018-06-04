@@ -21,20 +21,29 @@ var Connection = Promise.method(function (config) {
       host: config.host,
       password: config.password,
       database: config.database,
-      port: config.port
+      port: config.port,
+      typeCast: function (field, next) {
+        // console.log('typecasting...', field.name, field.type)
+        if (field.type === ('BLOB' || 'JSON')) {
+
+          var string = null
+          try {
+            string = field.string()
+            string = JSON.parse(string)
+          } catch (e) {
+            return next()
+          } 
+          
+          return string
+        }
+        return next()
+      }
     }
   })
 })
 
 module.exports = function (config, tables) {
   assert(config.database, 'requires database')
-
-  config.typeCast = function (field, next) {
-    if (field.type === 'JSON') {
-      return (JSON.parse(field.string()))
-    }
-    return next()
-  }
 
   return Connection({
     user: config.user,

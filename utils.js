@@ -47,7 +47,7 @@ module.exports.count = function (query) {
 module.exports.paginate = function (query, page, limit) {
   assert(query, 'driver query required.')
   page = page || 1
-  limit = limit || 100
+  limit = limit || 50
 
   if (page < 1) page = 1
   var offset = (page - 1) * limit

@@ -10,7 +10,6 @@ function createDB(con, name) {
 var Connection = Promise.method(function (config) {
   assert(config.user, 'requires user')
   assert(config.host, 'requires host')
-  assert(config.database, 'requires database')
   assert(config.password, 'requires password')
 
   return Knex({

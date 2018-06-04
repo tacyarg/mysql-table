@@ -13,9 +13,9 @@ var Connection = Promise.method(function (config) {
   assert(config.password, 'requires password')
 
   return Knex({
-    pool: {
-      min: 0,
-      max: 5
+    pool: config.pool || {
+      min: 1,
+      max: 10
     },
     acquireConnectionTimeout:  config.acquireConnectionTimeout || 10000,
     client: config.client || 'mysql',

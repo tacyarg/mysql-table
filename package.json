@@ -1,6 +1,6 @@
 {
   "name": "mysql-table",
-  "version": "2.0.18",
+  "version": "2.0.20",
   "description": "Simple and flexable Mysql library built on top of knexjs.",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "knex": "^0.14.6",
     "lodash": "^4.17.10",
     "mysql": "^2.15.0",
-    "mysql2": "^1.5.3"
+    "mysql2": "^1.5.3",
+    "uuid": "^3.2.1"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "mysql-table",
-  "version": "2.0.20",
+  "version": "2.0.21",
   "description": "Simple and flexable Mysql library built on top of knexjs.",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/graycatfromspace/mysql-table#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "highland": "^2.13.0",
     "knex": "^0.14.6",
     "lodash": "^4.17.10",
     "mysql": "^2.15.0",

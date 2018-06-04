@@ -8,7 +8,11 @@ function createDB(con, name) {
 }
 
 var Connection = Promise.method(function (config) {
-  if(config.connection) return Knex(config)
+  assert(config.user, 'requires user')
+  assert(config.host, 'requires host')
+  assert(config.database, 'requires database')
+  assert(config.password, 'requires password')
+
   return Knex({
     pool: {
       min: 0,
@@ -48,6 +52,7 @@ module.exports = function (config, tables) {
   return Connection({
     user: config.user,
     host: config.host,
+    port: config.port,
     password: config.password
   }).then(con => {
     return createDB(con, config.database)

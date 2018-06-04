@@ -10,7 +10,7 @@ function createDB(con, name) {
 var Connection = Promise.method(function (config) {
   return Knex({
     pool: config.pool,
-    acquireConnectionTimeout:  config.acquireConnectionTimeout || 10000,
+    acquireConnectionTimeout: config.acquireConnectionTimeout || 10000,
     client: config.client || 'mysql',
     connection: {
       user: config.user,
@@ -28,8 +28,8 @@ var Connection = Promise.method(function (config) {
             string = JSON.parse(string)
           } catch (e) {
             return next()
-          } 
-          
+          }
+
           return string
         }
         return next()
@@ -43,7 +43,24 @@ module.exports = function (config, tables) {
   assert(config.user, 'requires user')
   assert(config.host, 'requires host')
   assert(config.password, 'requires password')
-  
+
+
+  if (config.client === 'pg') {
+    return Connection(config).then(con => {
+      tables = lodash.castArray(tables);
+      return Promise.reduce(tables, function (result, table) {
+        return table(con).then(function (table) {
+          result[table.schema.table] = table;
+          return result;
+        });
+      }, {
+        _con: con,
+        _config: config
+      });
+    })
+  }
+
+
   return Connection({
     user: config.user,
     host: config.host,

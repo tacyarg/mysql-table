@@ -20,8 +20,8 @@ var Connection = Promise.method(function (config) {
       port: config.port,
       typeCast: function (field, next) {
         // console.log('typecasting...', field.name, field.type)
-        if (field.type === ('BLOB' || 'JSON')) {
 
+        function parseJSON (field) {
           var string = null
           try {
             string = field.string()
@@ -29,8 +29,18 @@ var Connection = Promise.method(function (config) {
           } catch (e) {
             return next()
           }
-
           return string
+        }
+
+        var string = null
+        switch(field.type) {
+          case 'TINY':
+            if(field.length != 1) return next()
+            return field.string() == '1'
+          case 'BLOB':
+            return parseJSON(field)
+          case 'JSON':
+            return parseJSON(field)
         }
         return next()
       }

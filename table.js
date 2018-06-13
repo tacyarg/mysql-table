@@ -16,6 +16,7 @@ module.exports = function (con, schema) {
 
     table.schema = schema
     table.con = con
+    table.utils = utils
 
     table.alter = function (schema) {
       assert(schema, 'requires schema')
@@ -50,7 +51,9 @@ module.exports = function (con, schema) {
     table.getAll = function (ids) {
       assert(ids, 'requires ids')
       ids = lodash.castArray(ids)
-      return Promise.mapSeries(ids, table.get)
+      return Promise.map(ids, table.get, {
+        concurrency: 5
+      })
     }
 
     table.has = function (id) {
@@ -75,25 +78,22 @@ module.exports = function (con, schema) {
       assert(object, 'requires object')
       object = lodash.omit(object, 'id')
       return table().where('id', id).update(object).then(function(){
-        object.id = id
-        return object
+        return table.get(id)
       })
     }
 
     table.create = function (object) {
       assert(object, 'requires object to create')
       if(!object.id) object.id = uuid()
-      return table().insert(object).then(function(){
-        return object
+      return table().insert(object).then(function(res){
+        return table.get(object.id)
       })
     }
 
     table.upsert = function (object) {
       assert(object, 'requires object to upsert')
       assert(lodash.isObject(object), 'requires object to upsert')
-      return table.create(object).then(result => {
-        return object
-      }).catch(err => {
+      return table.create(object).catch(err => {
         return table.update(object.id, object)
       })
     }
@@ -113,7 +113,7 @@ module.exports = function (con, schema) {
 
     table.delete = function (id) {
       assert(id, 'requires id')
-      return table.get(id).del().then(result => {
+      return table.getBy('id', id).first().del().then(result => {
         return true
       })
     }

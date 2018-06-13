@@ -65,3 +65,12 @@ module.exports.paginate = function (query, page, limit) {
     }
   })
 }
+
+module.exports.stringifySchema = function (object, fields) {
+  var row = lodash.cloneDeep(object)
+  lodash.each(fields, key => {
+    if(!row[key]) return
+    row[key] = JSON.stringify(row[key])
+  })
+  return row
+}

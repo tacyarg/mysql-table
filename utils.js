@@ -41,7 +41,7 @@ module.exports.alterTable = function (con, schema) {
 
 module.exports.count = function (query) {
   assert(query, 'driver query required.')
-  return query.clone().count('* as count').first().then(result => result.count)
+  return query.clone().count('* as count').first().then(result => result.count).catch(err => { return 0 })
 }
 
 module.exports.paginate = function (query, page, limit) {

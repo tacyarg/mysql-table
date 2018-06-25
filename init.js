@@ -23,7 +23,7 @@ var Connection = Promise.method(function (config) {
       typeCast: function (field, next) {
         // console.log('typecasting...', field.name, field.type)
 
-        function parseJSON (field) {
+        function parseJSON(field) {
           var string = null
           try {
             string = field.string()
@@ -35,9 +35,9 @@ var Connection = Promise.method(function (config) {
         }
 
         var string = null
-        switch(field.type) {
+        switch (field.type) {
           case 'TINY':
-            if(field.length != 1) return next()
+            if (field.length != 1) return next()
             return field.string() == '1'
           case 'BLOB':
             return parseJSON(field)
@@ -56,22 +56,12 @@ module.exports = function (config, tables) {
   assert(config.host, 'requires host')
   assert(config.password, 'requires password')
 
-
   if (config.client === 'pg') {
     return Connection(config).then(con => {
-      tables = lodash.castArray(tables);
-      return Promise.reduce(tables, function (result, table) {
-        return table(con).then(function (table) {
-          result[table.schema.table] = table;
-          return result;
-        });
-      }, {
-        _con: con,
-        _config: config
-      });
+      if(!tables) return con
+      return module.exports.initializeTables(con, tables)
     })
   }
-
 
   return Connection({
     user: config.user,
@@ -83,24 +73,22 @@ module.exports = function (config, tables) {
   }).then(con => {
     return Connection(config)
   }).then(con => {
-    tables = lodash.castArray(tables);
-    return Promise.reduce(tables, function (result, table) {
-      return table(con).then(function (table) {
-        result[table.schema.table] = table;
-        return result;
-      });
-    }, {
-      _con: con,
-      _config: config
-    });
+    if(!tables) return con
+    return module.exports.initializeTables(con, tables)
   })
 }
 
-// module.exports.createTable = function(con, name, schema) {
-//   return con.schema.createTable(TABLE_NAME, SCHEMA)
-//     .then(function(){
-//       return con
-//     }).catch(err => { 
-//       return con
-//     })
-// }
+module.exports.initializeTables = function (con, tables) {
+  assert(con, 'connection object required.')
+  assert(tables, 'tables required.')
+  tables = lodash.castArray(tables);
+  return Promise.reduce(tables, function (result, table) {
+    return table(con).then(function (table) {
+      result[table.schema.table] = table;
+      return result;
+    });
+  }, {
+    _con: con,
+    _config: config
+  });
+}

@@ -79,8 +79,11 @@ module.exports = function (config, tables) {
   }).then(con => {
     return createDB(con, config.database)
   }).then(con => {
-    return Connection(config)
-  }).then(con => {
+    return [
+      Connection(config),
+      con.destroy()
+    ]
+  }).spread(con => {
     tables = lodash.castArray(tables);
     return Promise.reduce(tables, function (result, table) {
       return table(con).then(function (table) {

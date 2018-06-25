@@ -74,7 +74,11 @@ module.exports = function (config, tables) {
     return Connection(config)
   }).then(con => {
     if(!tables) return con
-    return module.exports.initializeTables(con, tables)
+    return module.exports.initializeTables(con, tables).then(tables => {
+      tables._con = con
+      tables._config = config
+      return tables
+    })
   })
 }
 
@@ -87,8 +91,5 @@ module.exports.initializeTables = function (con, tables) {
       result[table.schema.table] = table;
       return result;
     });
-  }, {
-    _con: con,
-    _config: config
-  });
+  }, {});
 }

@@ -4,7 +4,9 @@ const assert = require('assert')
 const lodash = require('lodash')
 
 function createDB(con, name) {
-  return con.raw(`CREATE DATABASE IF NOT EXISTS ${name}`)
+  return con.raw(`CREATE DATABASE IF NOT EXISTS ${name}`).then(done => {
+    return con.destroy()
+  })
 }
 
 var Connection = Promise.method(function (config) {
@@ -79,11 +81,8 @@ module.exports = function (config, tables) {
   }).then(con => {
     return createDB(con, config.database)
   }).then(con => {
-    return [
-      Connection(config),
-      con.destroy()
-    ]
-  }).spread(con => {
+    return Connection(config)
+  }).then(con => {
     tables = lodash.castArray(tables);
     return Promise.reduce(tables, function (result, table) {
       return table(con).then(function (table) {

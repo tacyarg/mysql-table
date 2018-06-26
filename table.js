@@ -79,10 +79,10 @@ module.exports = function (con, schema) {
       
       if(fields) {
         fields = lodash.castArray(fields)
-        object = utils.stringifySchema(object, fields)
+        var stringified = utils.stringifySchema(object, fields)
       }
 
-      return table().where('id', id).update(lodash.omit(object, 'id')).then(function(){
+      return table().where('id', id).update(lodash.omit(stringified, 'id')).then(function(){
         return object
       })
     }
@@ -92,11 +92,11 @@ module.exports = function (con, schema) {
       
       if(fields) {
         fields = lodash.castArray(fields)
-        object = utils.stringifySchema(object, fields)
+        var stringified = utils.stringifySchema(object, fields)
       }
       
       if(!object.id) object.id = uuid()
-      return table().insert(object).then(function(res){
+      return table().insert(stringified).then(function(res){
         return object
       })
     }

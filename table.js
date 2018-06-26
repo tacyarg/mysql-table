@@ -76,13 +76,15 @@ module.exports = function (con, schema) {
     table.update = function (id, object, fields) {
       assert(id, 'requires id')
       assert(lodash.isObject(object), 'requires object')
-      
+      object = lodash.omit(object, 'id')
+
       if(fields) {
         fields = lodash.castArray(fields)
         var stringified = utils.stringifySchema(object, fields)
       }
 
-      return table().where('id', id).update(lodash.omit(stringified, 'id')).then(function(){
+      return table().where('id', id).update(stringified).then(function(){
+        object.id = id
         return object
       })
     }

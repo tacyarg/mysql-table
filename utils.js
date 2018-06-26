@@ -70,6 +70,7 @@ module.exports.stringifySchema = function (object, fields) {
   var row = lodash.cloneDeep(object)
   lodash.each(fields, key => {
     if(!row[key]) return
+    if(!lodash.isObject(row[key])) return 
     row[key] = JSON.stringify(row[key])
   })
   return row

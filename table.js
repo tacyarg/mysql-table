@@ -78,12 +78,12 @@ module.exports = function (con, schema) {
       assert(lodash.isObject(object), 'requires object')
       object = lodash.omit(object, 'id')
 
+      var stringified = null
       if(fields) {
         fields = lodash.castArray(fields)
-        var stringified = utils.stringifySchema(object, fields)
+        stringified = utils.stringifySchema(object, fields)
       }
-
-      return table().where('id', id).update(stringified).then(function(){
+      return table().where('id', id).update(stringified || object).then(function(){
         object.id = id
         return object
       })
@@ -91,14 +91,15 @@ module.exports = function (con, schema) {
 
     table.create = function (object, fields) {
       assert(lodash.isObject(object), 'requires object')
-      
+      if(!object.id) object.id = uuid()
+
+      var stringified = null
       if(fields) {
         fields = lodash.castArray(fields)
-        var stringified = utils.stringifySchema(object, fields)
+        stringified = utils.stringifySchema(object, fields)
       }
       
-      if(!object.id) object.id = uuid()
-      return table().insert(stringified).then(function(res){
+      return table().insert(stringified || object).then(function(res){
         return object
       })
     }

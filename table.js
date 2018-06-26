@@ -52,7 +52,7 @@ module.exports = function (con, schema) {
       assert(ids, 'requires ids')
       ids = lodash.castArray(ids)
       return Promise.map(ids, table.get, {
-        concurrency: 5
+        concurrency: 20
       })
     }
 
@@ -73,28 +73,38 @@ module.exports = function (con, schema) {
       })
     }
 
-    table.update = function (id, object) {
+    table.update = function (id, object, fields) {
       assert(id, 'requires id')
-      assert(object, 'requires object')
-      object = lodash.omit(object, 'id')
-      return table().where('id', id).update(object).then(function(){
-        return table.get(id)
+      assert(lodash.isObject(object), 'requires object')
+      
+      if(fields) {
+        fields = lodash.castArray(fields)
+        object = utils.stringifySchema(object, fields)
+      }
+
+      return table().where('id', id).update(lodash.omit(object, 'id')).then(function(){
+        return object
       })
     }
 
-    table.create = function (object) {
-      assert(object, 'requires object to create')
+    table.create = function (object, fields) {
+      assert(lodash.isObject(object), 'requires object')
+      
+      if(fields) {
+        fields = lodash.castArray(fields)
+        object = utils.stringifySchema(object, fields)
+      }
+      
       if(!object.id) object.id = uuid()
       return table().insert(object).then(function(res){
-        return table.get(object.id)
+        return object
       })
     }
 
-    table.upsert = function (object) {
-      assert(object, 'requires object to upsert')
+    table.upsert = function (object, fields) {
       assert(lodash.isObject(object), 'requires object to upsert')
-      return table.create(object).catch(err => {
-        return table.update(object.id, object)
+      return table.create(object, fields).catch(err => {
+        return table.update(object.id, object, fields)
       })
     }
 
